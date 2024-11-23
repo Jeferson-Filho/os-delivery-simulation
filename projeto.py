@@ -1,5 +1,7 @@
-#Caio Bohlhalter de Souza
-#Jeferson Patrick Dietrich
+# Projeto da Disciplina - Sistemas Operacionais I
+    # Caio Bohlhalter de Souza
+    # Jeferson Patrick Dietrich
+
 import random
 import sys
 import threading
@@ -39,6 +41,86 @@ class Encomenda:
         with open(f"encomenda_N{self.numero}.txt", 'a') as file:
             file.write("\n" + log)
 
+# Classe para representar um veículo com A espaços de carga
+class Veiculo:
+    # Construtor da classe
+    def __init__(self, id_veiculo, ponto_inicial, capacidade):
+        self.id = id_veiculo
+        self.ponto_atual = ponto_inicial
+        self.capacidade = capacidade
+        self.carga = []
+
+    # Carregar uma encomenda
+    def carregar(self, encomenda):
+        if len(self.carga) < self.capacidade:
+            self.carga.append(encomenda)
+            log = f"Veículo {self.id}: Carregou a encomenda {encomenda.numero} no ponto {self.ponto_atual} em {datetime.now()}"
+            print(log)
+            with open(f"veiculo_N{self.id}.txt", 'w') as file:
+                file.write(log)
+            return True
+        else:
+            print(f"Veículo {self.id}: Capacidade máxima atingida, não pode carregar a encomenda {encomenda.numero}.")
+            return False
+
+    # Descarregar uma encomenda
+    def descarregar(self, ponto_atual):
+        descarregadas = [encomenda for encomenda in self.carga if encomenda.ponto_destino == ponto_atual]
+        for encomenda in descarregadas:
+            self.carga.remove(encomenda)
+            encomenda.descarregar()
+            log = f"Veículo {self.id}: Descarregou a encomenda {encomenda.numero} no ponto {ponto_atual} em {datetime.now()}"
+            print(log)
+            with open(f"veiculo_N{self.id}.txt", 'w') as file:
+                file.write(log)
+
+    # Translocação do veículo
+    def viajar_para(self, proximo_ponto):
+        tempo_viagem = random.uniform(1, 3)  # Tempo de viagem aleatório (1 a 3 segundos)
+        time.sleep(tempo_viagem)
+        log = f"Veículo {self.id}: Viajou do ponto {self.ponto_atual} para o ponto {proximo_ponto} em {datetime.now()}"
+        print(log)
+        with open(f"veiculo_N{self.id}.txt", 'w') as file:
+            file.write(log)
+        self.ponto_atual = proximo_ponto
+
+# Classe para representar um ponto de redistribuição de encomendas
+class Redistribuicao:
+    def __init__(self, id_ponto):
+        self.id = id_ponto
+        self.fila_encomendas = Queue()
+        self.lock = Lock()  # Lock para garantir sincronização
+
+    def adicionar_encomenda(self, encomenda):
+        with self.lock:
+            self.fila_encomendas.put(encomenda)
+            log = f"Ponto {self.id}: Encomenda {encomenda.numero} adicionada à fila."
+            print(log)
+            with open(f"redistribuicao_N{self.id}.txt", 'w') as file:
+                file.write(log)
+
+    def remover_encomenda(self):
+        with self.lock:
+            if not self.fila_encomendas.empty():
+                encomenda = self.fila_encomendas.get()
+                log = f"Ponto {self.id}: Encomenda {encomenda.numero} retirada da fila."
+                print(log)
+                with open(f"redistribuicao_N{self.id}.txt", 'w') as file:
+                    file.write(log)
+                return encomenda
+            else:
+                log = (f"Ponto {self.id}: Nenhuma encomenda disponível na fila.")
+                print(log)
+                with open(f"redistribuicao_N{self.id}.txt", 'w') as file:
+                    file.write(log)
+                return None
+
+    def monitorar_status(self):
+        with self.lock:
+            status = f"Ponto {self.id}: {self.fila_encomendas.qsize()} encomenda(s) na fila."
+            print(status)
+            with open(f"redistribuicao_N{self.id}.txt", 'w') as file:
+                file.write(status)
 
 # Funções para simular as operações de cada thread
 def thread_encomenda(encomenda):
