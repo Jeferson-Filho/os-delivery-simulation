@@ -194,7 +194,7 @@ def main():
     pontos = [Redistribuicao(i) for i in range(1, S + 1)]
 
     # Criando os veículos
-    veiculos = [Veiculo(i, A, 0) for i in range(1, C + 1)]
+    veiculos = [Veiculo(i, A, random.randint(1, S)) for i in range(1, C + 1)]
 
     # Criando as encomendas
     encomendas = [Encomenda(i, random.randint(1, S), random.randint(1, S)) for i in range(1, P + 1)]
