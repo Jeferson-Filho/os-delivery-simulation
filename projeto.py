@@ -184,6 +184,12 @@ def main():
         print("Todos os argumentos devem ser números inteiros.")
         return
 
+    if not (P > A > C):
+        print("Erro: A condição P > A > C não foi atendida.")
+        print(f"Valores fornecidos: P = {P}, A = {A}, C = {C}")
+        print("Garanta que: P (encomendas) > A (espaços de carga) > C (veículos).")
+        return
+    
     # Criando os pontos de redistribuição
     pontos = [Redistribuicao(i) for i in range(1, S + 1)]
 
