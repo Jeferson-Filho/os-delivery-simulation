@@ -9,7 +9,6 @@ import time
 from datetime import datetime
 from queue import Queue
 
-# Variável global para rastrear encomendas restantes
 encomendas_restantes = 0
 lock_encomendas = threading.Lock()
 
