@@ -194,11 +194,18 @@ def main():
     pontos = [Redistribuicao(i) for i in range(1, S + 1)]
 
     # Criando os veículos
-    veiculos = [Veiculo(i, A, random.randint(1, S)) for i in range(1, C + 1)]
+    veiculos = [Veiculo(i, A, random.randint(0, S - 1)) for i in range(1, C + 1)]
 
     # Criando as encomendas
-    encomendas = [Encomenda(i, random.randint(1, S), random.randint(1, S)) for i in range(1, P + 1)]
-    encomendas_restantes = len(encomendas)
+    encomendas = []
+    for i in range(1, P + 1):
+        ponto_origem = random.randint(1, S)
+        ponto_destino = random.randint(1, S)
+        while ponto_destino == ponto_origem:
+            ponto_destino = random.randint(1, S)
+        encomendas.append(Encomenda(i, ponto_origem, ponto_destino))
+        encomendas_restantes = len(encomendas)
+
 
     # Iniciar threads para encomendas, veículos e pontos
     for encomenda in encomendas:
@@ -209,7 +216,6 @@ def main():
 
     for ponto in pontos:
         threading.Thread(target=thread_ponto, args=(ponto, pontos)).start()
-
 
 if __name__ == "__main__":
     main()
