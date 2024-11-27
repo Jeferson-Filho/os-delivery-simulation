@@ -78,6 +78,11 @@ O programa implementa as funcionalidades de registro de rastros das encomendas, 
 ### **Pré-requisitos**
 - Python 3.x
 - Sistema operacional compatível com threads (Linux, macOS ou Windows).
+### **Console**
+O programa pode ser executado com o comando abaixo, substituindo cada letra pelos respectivos valores
+```
+python projeto.py <S> <C> <P> <A>
+```
 
 ### **Instalação**
 1. Clone o repositório do projeto:
