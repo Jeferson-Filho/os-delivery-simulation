@@ -13,8 +13,7 @@ from queue import Queue
 encomendas_restantes = 0
 lock_encomendas = threading.Lock()
 
-
-# Classe para representar uma encomenda
+##### Classes para as entidades relacionadas #####
 class Encomenda:
     def __init__(self, numero, ponto_origem, ponto_destino):
         self.numero = numero
@@ -22,7 +21,7 @@ class Encomenda:
         self.ponto_destino = ponto_destino
         self.hora_chegada_origem = None
         self.hora_carregada = None
-        self.veiculo = None  # Alterado de veiculo_id para veiculo
+        self.veiculo = None
         self.hora_descarregada = None
 
     def registrar_encomenda(self):
@@ -34,7 +33,7 @@ class Encomenda:
 
     def carregar(self, veiculo):
         self.hora_carregada = datetime.now()
-        self.veiculo = veiculo  # Agora armazenando o objeto veiculo, não o id
+        self.veiculo = veiculo
         log = f"Encomenda {self.numero}: Carregada no veículo {veiculo.id} em {self.hora_carregada}"
         print(log)
         with open(f"encomenda_N{self.numero}.txt", 'a') as file:
@@ -48,7 +47,6 @@ class Encomenda:
             file.write("\n" + log)
 
 
-# Classe para representar um veículo
 class Veiculo:
     def __init__(self, id_veiculo, capacidade, ponto_inicial):
         self.id = id_veiculo
@@ -78,13 +76,12 @@ class Veiculo:
                 encomendas_restantes -= 1
 
     def viajar_para(self, proximo_ponto):
-        tempo_viagem = random.uniform(0.5, 2.0)  # Tempo aleatório entre 0.5 e 2.0 segundos
+        tempo_viagem = random.uniform(0.5, 2.0)
         time.sleep(tempo_viagem)
         print(f"Veículo {self.id}: Viajou do ponto {self.ponto_atual} para o ponto {proximo_ponto} (tempo: {tempo_viagem:.2f}s).")
         self.ponto_atual = proximo_ponto
 
 
-# Classe para representar um ponto de redistribuição de encomendas
 class Redistribuicao:
     def __init__(self, id_ponto):
         self.id = id_ponto
@@ -96,10 +93,9 @@ class Redistribuicao:
         print(f"Ponto {self.id}: Encomenda {encomenda.numero} adicionada à fila.")
 
     def processar_veiculo(self, veiculo):
-        # Descarregar encomendas do veículo
         veiculo.descarregar(self.id)
 
-        # Carregar encomendas no veículo
+        # Carregar encomendas no veículo enquanto houver encomendas
         while not self.fila_encomendas.empty() and len(veiculo.carga) < veiculo.capacidade:
             encomenda = self.fila_encomendas.get()
             if encomenda:
@@ -114,7 +110,7 @@ class Redistribuicao:
             self.semaforo.release()
 
 
-# Funções para threads
+##### Funções para threads referentes às entidades #####
 def thread_encomenda(encomenda, pontos):
     ponto_origem = pontos[encomenda.ponto_origem - 1]
     encomenda.registrar_encomenda()
@@ -166,7 +162,6 @@ def thread_ponto(ponto, pontos):
             print(f"Ponto {ponto.id}: Nenhuma encomenda para processar.")
 
 
-# Função principal
 def main():
     global encomendas_restantes
 
@@ -190,13 +185,11 @@ def main():
         print("Garanta que: P (encomendas) > A (espaços de carga) > C (veículos).")
         return
     
-    # Criando os pontos de redistribuição
+    ##### Criando as entidades #####
     pontos = [Redistribuicao(i) for i in range(1, S + 1)]
 
-    # Criando os veículos
     veiculos = [Veiculo(i, A, random.randint(0, S - 1)) for i in range(1, C + 1)]
 
-    # Criando as encomendas
     encomendas = []
     for i in range(1, P + 1):
         ponto_origem = random.randint(1, S)
@@ -207,7 +200,7 @@ def main():
         encomendas_restantes = len(encomendas)
 
 
-    # Iniciar threads para encomendas, veículos e pontos
+    ##### Iniciando as threads das entidades #####
     for encomenda in encomendas:
         threading.Thread(target=thread_encomenda, args=(encomenda, pontos)).start()
 
